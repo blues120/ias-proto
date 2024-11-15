@@ -1,4 +1,4 @@
-module gitlab.ctyuncdn.cn/ias/proto
+module github.com/blues120/ias-proto
 
 go 1.19
 
