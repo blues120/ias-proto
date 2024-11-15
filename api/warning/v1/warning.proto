@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package warning.v1;
+
+import "standard/v1/standard.proto";
+
+option go_package = "gitlab.ctyuncdn.cn/ias/proto/api/warning/v1;v1";
+
+message Frame {
+  int64 timestamp = 1;  // Defines the current timestamp
+  string job_id = 2;    // Defines unique job
+  repeated Object object = 3;
+  string image_url = 4;
+  int64 camera_id = 5;
+  int64 width = 6;
+  int64 height = 7;
+  string camera_source = 8;
+  repeated rpcObject stream_object = 9;
+  repeated rpcAttribute extra_data = 10;
+  string object_id = 11;
+  standard.v1.AlgoOutput algo_output = 12;
+  string video_url = 13;
+}
+
+message Object {
+  string label = 1;
+  float score = 2;
+  repeated int32 box = 3;
+}
+
+message rpcObject {
+  uint32 object_id = 1;
+  string tracking_id = 2;
+  string object_label = 3;                       // Person, Vehicle, Face
+  rpcRectangle object_box = 4;                   // Box of object
+  float detect_conf = 5;                         // Confidence of detection
+  float tracking_conf = 6;                       // Confidence of tracking
+  repeated rpcAttribute attribute = 7;           // Multiple sets of attribute of object
+  repeated rpcFeatureVector feature_vector = 8;  // feature vector for face recognition
+}
+
+message rpcFeatureVector {
+  string name = 1;
+  repeated float feature = 2;
+  enum DataType {
+    UNKNOWN = 0;
+    INT8 = 1;
+    INT16 = 2;
+    FLOAT32 = 3;
+    FLOAT64 = 4;
+  }
+  DataType data_type = 3;
+  bytes data = 4;
+}
+
+message rpcAttribute {
+  string name = 1;   // key of the attribute, e.g. "type", "color", "hat"
+  string value = 2;  // value of the key, e.g. "SUV", "no", "yes"
+  float attr_conf = 3;
+}
+
+message rpcRectangle {
+  float x = 1;       // width scale between 0~1 in a frame
+  float y = 2;       // height scale between 0~1 in a frame
+  float width = 3;   // width scale between 0~1 in a frame
+  float height = 4;  // height scale between 0~1 in a frame
+}
+
+message Response {
+  uint32 code = 1;
+  string message = 2;
+}
+
+service SacService {
+  rpc SendMsg (Frame) returns (Response) {}
+}

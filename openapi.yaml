@@ -1,0 +1,211 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Agent API
+    description: 算法回调服务
+    version: 0.0.1
+paths:
+    /api/v1/algo/callback:
+        post:
+            tags:
+                - Agent
+            description: 算法回调，用于上传算法输出结果
+            operationId: Agent_AlgoCallback
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/standard.v1.AlgoOutput'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/standard.v1.AlgoOutputResponse'
+    /api/v1/algo/replace:
+        post:
+            tags:
+                - Agent
+            description: agent_config，替换algorithm.model
+            operationId: Agent_ReplaceAlgorithmModel
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/standard.v1.ReplaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/standard.v1.ReplaceResponse'
+components:
+    schemas:
+        standard.v1.AlgoOutput:
+            type: object
+            properties:
+                version:
+                    type: string
+                task:
+                    type: object
+                    additionalProperties:
+                        type: string
+                events:
+                    $ref: '#/components/schemas/standard.v1.Events'
+            description: request
+        standard.v1.AlgoOutputResponse:
+            type: object
+            properties: {}
+        standard.v1.Attribute:
+            type: object
+            properties:
+                name:
+                    type: string
+                value:
+                    type: string
+                attrConf:
+                    type: number
+                    format: float
+            description: 'Attribute 检测结果中对象的属性 例如：{ "color": "red", "type": "SUV" }'
+        standard.v1.Event:
+            type: object
+            properties:
+                name:
+                    type: string
+                detectAreas:
+                    type: array
+                    items:
+                        type: integer
+                        format: int32
+                detectAreasShape:
+                    type: array
+                    items:
+                        type: integer
+                        format: int32
+                detectDirections:
+                    type: array
+                    items:
+                        type: integer
+                        format: int32
+                detectDirectionsCount:
+                    type: integer
+                    format: int32
+        standard.v1.Events:
+            type: object
+            properties:
+                cameraId:
+                    type: string
+                timestamp:
+                    type: integer
+                    format: int64
+                image:
+                    $ref: '#/components/schemas/standard.v1.Image'
+                video:
+                    $ref: '#/components/schemas/standard.v1.Video'
+                objects:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/standard.v1.Object'
+                attribute:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/standard.v1.Attribute'
+                event:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/standard.v1.Event'
+        standard.v1.Image:
+            type: object
+            properties:
+                path:
+                    type: string
+                width:
+                    type: integer
+                    format: int64
+                height:
+                    type: integer
+                    format: int64
+                data:
+                    type: string
+                    format: bytes
+            description: Image 图像结果
+        standard.v1.Object:
+            type: object
+            properties:
+                trackId:
+                    type: integer
+                    format: int64
+                objectLabel:
+                    type: string
+                detectConf:
+                    type: number
+                    format: float
+                trackConf:
+                    type: number
+                    format: float
+                objectBox:
+                    $ref: '#/components/schemas/standard.v1.Object_Box'
+                attribute:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/standard.v1.Attribute'
+                landmark:
+                    type: array
+                    items:
+                        type: number
+                        format: float
+        standard.v1.Object_Box:
+            type: object
+            properties:
+                x:
+                    type: number
+                    format: float
+                y:
+                    type: number
+                    format: float
+                width:
+                    type: number
+                    format: float
+                height:
+                    type: number
+                    format: float
+        standard.v1.ReplaceAlgo:
+            type: object
+            properties:
+                algoName:
+                    type: string
+                routingKey:
+                    type: string
+        standard.v1.ReplaceRequest:
+            type: object
+            properties:
+                replaceAlgo:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/standard.v1.ReplaceAlgo'
+        standard.v1.ReplaceResponse:
+            type: object
+            properties: {}
+        standard.v1.Video:
+            type: object
+            properties:
+                path:
+                    type: string
+                width:
+                    type: integer
+                    format: int64
+                height:
+                    type: integer
+                    format: int64
+                data:
+                    type: string
+                    format: bytes
+            description: Video 视频结果
+tags:
+    - name: Agent

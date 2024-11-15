@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package deep_stream.v1;
+
+option go_package = "gitlab.ctyuncdn.cn/ias/proto/api/deep_stream/v1;v1";
+
+// This file defines a common format for output event messages.
+
+// Common structures
+
+message Rectangle {
+  float x = 1;       // width scale between 0~1 in a frame
+  float y = 2;       // height scale between 0~1 in a frame
+  float width = 3;   // width scale between 0~1 in a frame
+  float height = 4;  // height scale between 0~1 in a frame
+}
+
+// [Attribute] includes attribute of person, vehicle and face, provided by key-value format.
+// e.g. "color" - "red", "type" - "SUV", "hat" - "no", "glasses" - "yes".
+
+message Attribute {
+  string name = 1;   // key of the attribute, e.g. "type", "color", "hat"
+  string value = 2;  // value of the key, e.g. "SUV", "no", "yes"
+}
+
+// [FeatureVector] defines feature vector obtained from face identification.
+// The "data" field holds one feature vector, with the type of its elements
+// described by the "data_type" field. Each element is represented by one or
+// more bytes in network byte order.
+
+message FeatureVector {
+  string name = 1;
+  repeated float feature = 2;
+  enum DataType {
+    UNKNOWN = 0;
+    INT8 = 1;
+    INT16 = 2;
+    FLOAT32 = 3;
+    FLOAT64 = 4;
+  }
+  DataType data_type = 3;
+  bytes data = 4;
+}
+
+// [Object] holds detailed information of person, vehicle and face.
+
+message Object {
+  uint32 object_id = 1;
+  uint32 tracking_id = 2;
+  string object_label = 3;                    // Person, Vehicle, Face
+  Rectangle object_box = 4;                   // Box of object
+  float detect_conf = 5;                      // Confidence of detection
+  float tracking_conf = 6;                    // Confidence of tracking
+  repeated Attribute attribute = 7;           // Multiple sets of attribute of object
+  repeated FeatureVector feature_vector = 8;  // feature vector for face recognition
+}
+//
+// message Image{
+//    uint32 width = 1;
+//    uint32 height = 2;
+//    enum Format{
+//        UNKNOW = 0;
+//        RAW_RGBA = 1;
+//        ENCODE_JPEG = 11;
+//    }
+//    Format format = 3;
+//    bytes data = 4;
+//}
+
+// [Frame] defines basic information of frame and objects in the frame.
+message Frame {
+  string camera_id = 1;
+  uint64 timestamp = 2;        // Defines the current timestamp
+  repeated Object object = 3;  // All objects info in the frame
+  string image_path = 4;
+  string job_id = 5;      // Defines unique job
+  string model_type = 6;  // Defines model type
+  uint32 num_obj = 7;     // Defines object number
+  string video_name = 8;  // Defines smart_record video name
+}

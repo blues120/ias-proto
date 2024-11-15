@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package standard.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "gitlab.ctyuncdn.cn/ias/proto/api/standard/v1;v1";
+
+// Image 图像结果
+message Image {
+  string path = 1;
+  int64 width = 2;
+  int64 height = 3;
+  bytes data = 4;
+}
+
+// Video 视频结果
+message Video {
+  string path = 1;
+  int64 width = 2;
+  int64 height = 3;
+  bytes data = 4;
+}
+
+// Attribute 检测结果中对象的属性
+// 例如：{ "color": "red", "type": "SUV" }
+message Attribute {
+  string name = 1;
+  string value = 2;
+  float attr_conf = 3;
+}
+
+message Object {
+  message Box {
+    float x = 1;
+    float y = 2;
+    float width = 3;
+    float height = 4;
+  }
+
+  int64 track_id = 1;
+  string object_label = 2;
+  float detect_conf = 3;
+  float track_conf = 4;
+  Box object_box = 5;
+  repeated Attribute attribute = 6;
+  repeated float landmark = 7; // 用于人脸检测算法返回人脸关键点
+}
+
+message Events {
+  string camera_id = 1;
+  int64 timestamp = 2;
+  Image image = 3;
+  Video video = 4;
+  repeated Object objects = 5;
+  repeated Attribute attribute = 6;
+  repeated Event event= 7;
+}
+
+message Event {
+  string name = 1;
+  repeated int32 detect_areas = 2;
+  repeated int32 detect_areas_shape = 3;
+  repeated int32 detect_directions = 4;
+  int32 detect_directions_count = 5;
+}
+
+/*
+request
+ */
+message AlgoOutput {
+  string version = 1;
+  map<string, string> task = 2;
+  Events events = 3;
+}
+
+/*
+response
+ */
+
+message AlgoOutputResponse {}
+
+message ReplaceRequest {
+  repeated ReplaceAlgo replace_algo = 1;
+}
+
+
+message ReplaceAlgo{
+  string algo_name = 1;
+  string routing_key = 2;
+}
+
+message ReplaceResponse {}
+
+/*
+service
+ */
+
+// 算法回调服务
+service Agent {
+  // 算法回调，用于上传算法输出结果
+  rpc AlgoCallback (AlgoOutput) returns (AlgoOutputResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/algo/callback"
+      body: "*"
+    };
+  }
+
+  // agent_config，替换algorithm.model
+  rpc ReplaceAlgorithmModel (ReplaceRequest) returns (ReplaceResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/algo/replace"
+      body: "*"
+    };
+  }
+}
