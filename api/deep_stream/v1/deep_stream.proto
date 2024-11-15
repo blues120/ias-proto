@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package deep_stream.v1;
 
-option go_package = "gitlab.ctyuncdn.cn/ias/proto/api/deep_stream/v1;v1";
+option go_package = "github.com/blues120/ias-proto/api/deep_stream/v1;v1";
 
 // This file defines a common format for output event messages.
 

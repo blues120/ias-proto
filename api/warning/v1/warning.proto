@@ -4,7 +4,7 @@ package warning.v1;
 
 import "standard/v1/standard.proto";
 
-option go_package = "gitlab.ctyuncdn.cn/ias/proto/api/warning/v1;v1";
+option go_package = "github.com/blues120/ias-proto/api/warning/v1;v1";
 
 message Frame {
   int64 timestamp = 1;  // Defines the current timestamp

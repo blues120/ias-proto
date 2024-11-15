@@ -7,7 +7,7 @@
 package v1
 
 import (
-	v1 "gitlab.ctyuncdn.cn/ias/proto/api/standard/v1"
+	v1 "github.com/blues120/ias-proto/api/standard/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
